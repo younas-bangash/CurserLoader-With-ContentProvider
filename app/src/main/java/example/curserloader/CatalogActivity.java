@@ -1,6 +1,9 @@
 package example.curserloader;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -19,6 +22,9 @@ import android.widget.Toast;
 
 import example.curserloader.recylerview.MyListCursorAdapter;
 import example.curserloader.recylerview.OnClickListner;
+import example.curserloader.widget.CollectionWidget;
+
+import static example.curserloader.widget.WidgetDataProvider.mCollection;
 
 /**
  * Displays list of pets that were entered and stored in the app.
@@ -28,6 +34,7 @@ public class CatalogActivity extends AppCompatActivity
 
     private static final int PET_LOADER = 0;
     public static final String LOG_TAG = CatalogActivity.class.getSimpleName();
+    private static final String TAG = "CatalogActivity";
     //PetCursorAdapter petCursorAdapter;
     MyListCursorAdapter mRecylerAdapter;
     CursorLoader mCursor =  null;
@@ -97,10 +104,21 @@ public class CatalogActivity extends AppCompatActivity
                 return true;
             // Respond to a click on the "Delete all entries" menu option
             case R.id.action_delete_all_entries:
-                deleteAllPets();
+                changeSorting();
+                //deleteAllPets();
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void changeSorting() {
+        mCollection.add("ListView item " + 100);
+        Log.d(TAG, "changeSorting() called");
+        Context context = getApplicationContext();
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        ComponentName thisWidget = new ComponentName(context, CollectionWidget.class);
+        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget);
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_list);
     }
 
     private void deleteAllPets() {
